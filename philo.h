@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 17:18:36 by yalee             #+#    #+#             */
-/*   Updated: 2023/04/21 17:11:00 by yalee            ###   ########.fr       */
+/*   Updated: 2023/04/28 19:20:18 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef	struct s_philo
-{
-	int			name;
-	int			isded;
-	long long 	time_last_eat;
-	pthread_t	life;
-	t_table		*table;
-}		t_philo;
+#define MAX_INT = 2147483647;
+
+typedef struct s_philo t_philo;
+typedef struct s_table t_table;
 
 typedef struct s_table
 {
 	pthread_mutex_t *forks;
+	pthread_mutex_t lock_thread_create;
+	pthread_mutex_t	lock_print;
+	pthread_mutex_t lock_god;
+	pthread_mutex_t spawn_god;
+	pthread_mutex_t	lock_subgod;
 	t_philo			*philo;
 	int				philo_ded;
 	int				philo_num;
@@ -41,9 +42,38 @@ typedef struct s_table
 	int				time_must_eat;
 }		t_table;
 
-int ini_data(char **argv, int argc, t_table *table);
-int argv_bad(char **argv, int argc);
+typedef struct s_philo
+{
+	int name;
+	int isded;
+	int isthinking;
+	int	times_eaten;
+	long long time_last_eat;
+	pthread_t life;
+	pthread_t god;
+	t_table *table;
+} 		t_philo;
+
+typedef	struct	s_print_args
+{
+	int	name;
+	int	action;
+	long long	time;
+}		t_print_args;
+
+void free_all(t_table *table);
+void protected_printf(int name, int action, long long time, t_table *table);
+int lock_fork(t_philo *philo);
+void try_take_fork(t_philo *philo);
+void *start_routine(void *args);
+void start_threads(void *args);
+void check_data(t_table table);
+int data_bad(t_table table);
 long long ft_atoi(const char *str);
 int is_digits(char **argv);
 long long get_mili();
+void give_birth(t_table *table);
+void ini_data(char **argv, int argc, t_table *table);
+void ini_forks(t_table *table);
+int argv_bad(char **argv, int argc);
 #endif

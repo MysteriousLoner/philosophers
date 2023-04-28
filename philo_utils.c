@@ -6,11 +6,29 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 13:30:20 by yalee             #+#    #+#             */
-/*   Updated: 2023/04/21 16:38:03 by yalee            ###   ########.fr       */
+/*   Updated: 2023/04/28 19:18:40 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	free_all(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_destroy(&table->lock_thread_create);
+	pthread_mutex_destroy(&table->lock_print);
+	pthread_mutex_destroy(&table->lock_god);
+	pthread_mutex_destroy(&table->spawn_god);
+	pthread_mutex_destroy(&table->lock_subgod);
+	while (i < table->philo_num)
+	{
+		pthread_mutex_destroy(&table->forks[i]);
+		i++;
+	}
+	free(table->philo);
+}
 
 long long ft_atoi(const char *str)
 {
@@ -64,4 +82,22 @@ long long	get_mili()
 	gettimeofday(&te, NULL);
 	long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
 	return (milliseconds);
+}
+
+void	protected_printf(int name, int action, long long time, t_table *table)
+{
+	pthread_mutex_lock(&table->lock_print);
+	if (table->philo_ded < 0)
+	{
+		printf("[%lld]", ((time - table->start_time) / 10 * 10));
+		if (action == 1)
+			printf(" Philo number %i grabbed a fork.\n", name);
+		if (action == 2)
+			printf(" Philo number %i is eatin.\n", name);
+		if (action == 3)
+			printf(" Philo number %i is sleeping.\n", name);
+		if (action == 4)
+			printf(" Philo number %i is thinking.\n", name);
+	}
+	pthread_mutex_unlock(&table->lock_print);
 }

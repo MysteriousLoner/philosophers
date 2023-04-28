@@ -9,12 +9,12 @@
 
 NAME        := philo
 CC        := gcc
-FLAGS    := -Wall -Wextra -Werror 
+FLAGS    := -Wall -Wextra -Werror -g -fsanitize=thread -pthread
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
 ################################################################################
 
-SRCS        :=      philo.c \
+SRCS        :=      philo.c philo_utils.c inputs.c threads.c\
                           
 OBJS        := $(SRCS:.c=.o)
 

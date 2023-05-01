@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/27 11:05:15 by yalee             #+#    #+#             */
-/*   Updated: 2023/04/28 19:34:50 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/01 22:24:07 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,46 +36,6 @@ void	philo_eat(t_philo *philo)
 		philo->times_eaten++;
 }
 
-void	*physics(void *args)
-{
-	t_philo *philo = (t_philo *)args;
-
-	// (void)philo;
-	pthread_mutex_lock(&philo->table->lock_god);
-	while (philo->table->philo_ded < 0)
-	{
-		if (get_mili() - philo->time_last_eat > philo->table->die_time && philo->table->philo_ded < 0)
-		{
-			pthread_mutex_lock(&philo->table->lock_subgod);
-			philo->table->philo_ded = philo->name;
-			// pthread_mutex_lock(&philo->table->lock_subgod);
-			printf("[%lld] Philo number %i died.\n", (get_mili() - philo->table->start_time - 1), philo->table->philo_ded);
-			pthread_mutex_unlock(&philo->table->forks[philo->name]);
-			pthread_mutex_unlock(&philo->table->lock_subgod);
-		}
-	}
-	pthread_mutex_unlock(&philo->table->lock_god);
-	pthread_detach(philo->god);
-	return NULL;
-}
-
-int	all_not_fed(t_table *table)
-{
-	int	i;
-	
-	i = 0;
-	// pthread_mutex_lock(&table->lock_subgod);
-	if (table->time_must_eat < 0)
-		return (1);
-	while (i < table->philo_num)
-	{
-		if (table->philo[i].times_eaten < table->time_must_eat)
-			return (1);
-		i++;
-	}
-	// pthread_mutex_lock(&table->lock_subgod);
-	return (0);
-}
 
 void	*start_routine(void *args)
 {
@@ -109,7 +69,6 @@ void	start_threads(void *args)
 		pthread_mutex_lock(&table->lock_thread_create);
 		table->philo[i].time_last_eat = get_mili();
 		pthread_create(&table->philo[i].life, NULL, start_routine, &table->philo[i]);
-		pthread_create(&table->philo[i].god, NULL, physics, &table->philo[i]);
 		i += 2;
 		pthread_mutex_unlock(&table->lock_thread_create);
 	}
@@ -119,7 +78,6 @@ void	start_threads(void *args)
 		pthread_mutex_lock(&table->lock_thread_create);
 		table->philo[i].time_last_eat = get_mili();
 		pthread_create(&table->philo[i].life, NULL, start_routine, &table->philo[i]);
-		pthread_create(&table->philo[i].god, NULL, physics, &table->philo[i]);
 		i += 2;
 		pthread_mutex_unlock(&table->lock_thread_create);
 	}

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 13:31:43 by yalee             #+#    #+#             */
-/*   Updated: 2023/04/28 19:16:19 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/01 22:22:42 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ void	give_birth(t_table *table)
 	while (i < table->philo_num)
 	{
 		table->philo[i].name = i;
-		table->philo[i].isded = 0;
 		table->philo[i].time_last_eat = 0;
 		table->philo[i].table = table;
 		table->philo[i].isthinking = 0;
 		table->philo[i].times_eaten = 0;
+		pthread_mutex_init(&table->philo[i].lock_eat, NULL);
 		i++;
 	}
 }
@@ -40,9 +40,7 @@ void	ini_data(char **argv, int argc, t_table *table)
 	table->philo_ded = -1;
 	pthread_mutex_init(&table->lock_thread_create, NULL);
 	pthread_mutex_init(&table->lock_print, NULL);
-	pthread_mutex_init(&table->lock_god, NULL);
-	pthread_mutex_init(&table->lock_subgod, NULL);
-	pthread_mutex_init(&table->spawn_god, NULL);
+	pthread_mutex_init(&table->lock_checker, NULL);
 	if (argc == 6)
 		table->time_must_eat = ft_atoi(argv[5]);
 	else

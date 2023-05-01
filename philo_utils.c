@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 13:30:20 by yalee             #+#    #+#             */
-/*   Updated: 2023/04/28 19:18:40 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/01 22:23:44 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,10 @@ void	free_all(t_table *table)
 	i = 0;
 	pthread_mutex_destroy(&table->lock_thread_create);
 	pthread_mutex_destroy(&table->lock_print);
-	pthread_mutex_destroy(&table->lock_god);
-	pthread_mutex_destroy(&table->spawn_god);
-	pthread_mutex_destroy(&table->lock_subgod);
+	pthread_mutex_destroy(&table->lock_checker);
 	while (i < table->philo_num)
 	{
+		pthread_mutex_destroy(&table->philo[i].lock_eat);
 		pthread_mutex_destroy(&table->forks[i]);
 		i++;
 	}

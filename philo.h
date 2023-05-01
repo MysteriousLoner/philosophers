@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 17:18:36 by yalee             #+#    #+#             */
-/*   Updated: 2023/04/28 19:20:18 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/01 22:19:30 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,8 @@ typedef struct s_table
 	pthread_mutex_t *forks;
 	pthread_mutex_t lock_thread_create;
 	pthread_mutex_t	lock_print;
-	pthread_mutex_t lock_god;
-	pthread_mutex_t spawn_god;
-	pthread_mutex_t	lock_subgod;
+	pthread_mutex_t lock_checker;
+	pthread_t		checker;
 	t_philo			*philo;
 	int				philo_ded;
 	int				philo_num;
@@ -45,13 +44,12 @@ typedef struct s_table
 typedef struct s_philo
 {
 	int name;
-	int isded;
 	int isthinking;
 	int	times_eaten;
 	long long time_last_eat;
 	pthread_t life;
-	pthread_t god;
 	t_table *table;
+	pthread_mutex_t lock_eat;
 } 		t_philo;
 
 typedef	struct	s_print_args

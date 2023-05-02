@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 13:31:43 by yalee             #+#    #+#             */
-/*   Updated: 2023/05/02 15:33:52 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/02 16:06:06 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ void	ini_data(char **argv, int argc, t_table *table)
 {
 	table->philo_num = ft_atoi(argv[1]);
 	table->philo = (t_philo *)malloc(sizeof(t_philo) * ft_atoi(argv[1]));
-	table->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
+	table->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
+			* ft_atoi(argv[1]));
 	table->die_time = ft_atoi(argv[2]);
 	table->eat_time = ft_atoi(argv[3]);
 	table->sleep_time = ft_atoi(argv[4]);
@@ -71,7 +72,7 @@ void	ini_forks(t_table *table)
 	}
 }
 
-int argv_bad(char **argv, int argc)
+int	argv_bad(char **argv, int argc)
 {
 	if (argc > 6 || argc < 5)
 		return (1);

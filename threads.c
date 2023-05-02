@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/27 11:05:15 by yalee             #+#    #+#             */
-/*   Updated: 2023/05/02 15:01:18 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/02 16:26:22 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,14 @@ int	checker(t_philo *philo)
 {
 	long long	time;
 
-	if (philo->times_eaten >= philo->table->time_must_eat && philo->table->time_must_eat > 0)
+	if (philo->times_eaten >= philo->table->time_must_eat
+		&& philo->table->time_must_eat > 0)
 	{
 		philo->dead = 1;
 		return (0);
 	}
 	if (!philo->will_die)
-		return(1);
+		return (1);
 	pthread_mutex_lock(&philo->lock_eat);
 	time = get_mili() - philo->time_last_eat + 10;
 	pthread_mutex_unlock(&philo->lock_eat);
@@ -71,14 +72,15 @@ int	checker(t_philo *philo)
 void	*start_routine(void *args)
 {
 	long long	sleep;
-	t_philo	*philo = (t_philo *)args;
+	t_philo		*philo;
 
+	philo = (t_philo *)args;
 	if (philo->table->philo_num == 1)
 	{
 		printf("[%lld] Philo number 0 died.\n", philo->table->die_time);
-		return NULL;
+		return (NULL);
 	}
-	while(!philo->dead)
+	while (!philo->dead)
 	{
 		if (philo->isthinking && !philo->dead)
 			protected_printf(philo->name, 4, get_mili(), philo->table);
@@ -92,45 +94,44 @@ void	*start_routine(void *args)
 				usleep(10);
 		}
 	}
-	return NULL;
+	return (NULL);
 }
 
 void	start_threads(void *args)
 {
-	int	i;
-	i = 0;
-	t_table *table = (t_table *)args;
+	int		i;
+	int		c;
+	t_table	*table;
 
-	while (i < table->philo_num)
+	table = (t_table *)args;
+	i = 0;
+	c = 0;
+	while (c < 2)
 	{
-		pthread_mutex_lock(&table->lock_thread_create);
-		pthread_mutex_lock(&table->philo[i].lock_eat);
-		table->philo[i].time_last_eat = get_mili();
-		pthread_mutex_unlock(&table->philo[i].lock_eat);
-		pthread_create(&table->philo[i].life, NULL, start_routine, &table->philo[i]);
-		i += 2;
-		pthread_mutex_unlock(&table->lock_thread_create);
-	}
-	i = 1;
-	while (i < table->philo_num)
-	{
-		pthread_mutex_lock(&table->lock_thread_create);
-		pthread_mutex_lock(&table->philo[i].lock_eat);
-		table->philo[i].time_last_eat = get_mili();
-		pthread_mutex_unlock(&table->philo[i].lock_eat);
-		pthread_create(&table->philo[i].life, NULL, start_routine, &table->philo[i]);
-		i += 2;
-		pthread_mutex_unlock(&table->lock_thread_create);
+		while (i < table->philo_num)
+		{
+			pthread_mutex_lock(&table->lock_thread_create);
+			pthread_mutex_lock(&table->philo[i].lock_eat);
+			table->philo[i].time_last_eat = get_mili();
+			pthread_mutex_unlock(&table->philo[i].lock_eat);
+			pthread_create(&table->philo[i].life, NULL, start_routine,
+				&table->philo[i]);
+			i += 2;
+			pthread_mutex_unlock(&table->lock_thread_create);
+		}
+		i = 1;
+		c++;
 	}
 	join_threads(table);
 }
 
 void	join_threads(void *args)
 {
-	int i;
-	
+	int		i;
+	t_table	*table;
+
 	i = 0;
-	t_table *table = (t_table *)args;
+	table = (t_table *)args;
 	while (i < table->philo_num)
 	{
 		pthread_mutex_lock(&table->lock_thread_create);

@@ -14,7 +14,7 @@ FLAGS    := -Wall -Wextra -Werror -g -fsanitize=thread -pthread
 #                                 PROGRAM'S SRCS                               #
 ################################################################################
 
-SRCS        :=      philo.c philo_utils.c inputs.c threads.c\
+SRCS        :=      philo.c philo_utils.c inputs.c threads.c philo_utils_2.c\
                           
 OBJS        := $(SRCS:.c=.o)
 

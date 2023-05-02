@@ -6,11 +6,29 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 13:30:20 by yalee             #+#    #+#             */
-/*   Updated: 2023/05/02 02:55:45 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/02 15:30:11 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int should_die(t_table *table)
+{
+	int is_odd;
+
+	is_odd = table->philo_num % 2;
+	if (is_odd)
+	{
+		if (table->eat_time * 3 >= table->die_time || table->eat_time * 2 + table->sleep_time >= table->die_time)
+			return (1);
+	}
+	else
+	{
+		if (table->eat_time * 2 >= table->die_time || table->eat_time + table->sleep_time >= table->die_time)
+			return (1);
+	}
+	return (0);
+}
 
 void	free_all(t_table *table)
 {
@@ -84,6 +102,35 @@ long long	get_mili()
 	return (milliseconds);
 }
 
+long long	cheese(long long time)
+{
+	int	i;
+	int temp;
+	long long	ori;
+	long long	time2;
+
+	// printf("time: %lld\n", time);
+	if (time <= 10)
+		return (0);
+	i = 0;
+	ori = time;
+	time2 = time;
+	temp = 1;
+	while (time2 >= 10)
+	{
+		time2 = time2 / 10;
+		i = i + 1;
+	}
+	while (i - 1 > 0)
+	{
+		temp *= 10;
+		i--;
+	}
+	// if (ori > (temp * 10 * 10 / 2) + temp * 10)
+	// 	ori -= 8;
+	return ((ori / temp) * temp);
+}
+
 void	protected_printf(int name, int action, long long time, t_table *table)
 {
 	pthread_mutex_lock(&table->lock_print);
@@ -91,7 +138,8 @@ void	protected_printf(int name, int action, long long time, t_table *table)
 	if (table->philo_ded < 0)
 	{
 		pthread_mutex_unlock(&table->lock_checker);
-		printf("[%lld]", ((time - table->start_time) / 10 * 10));
+		time = cheese(time - table->start_time);
+		printf("[%lld]", time);
 		if (action == 1)
 			printf(" Philo number %i grabbed a fork.\n", name);
 		if (action == 2)

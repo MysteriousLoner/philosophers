@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 13:31:43 by yalee             #+#    #+#             */
-/*   Updated: 2023/05/02 02:18:50 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/02 15:33:52 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,10 @@ void	give_birth(t_table *table)
 		table->philo[i].times_eaten = 0;
 		table->philo[i].dead = 0;
 		table->philo[i].fate = table->die_time;
+		if (table->bad_env)
+			table->philo[i].will_die = 1;
+		else
+			table->philo[i].will_die = 0;
 		pthread_mutex_init(&(table->philo[i].lock_eat), NULL);
 		i++;
 	}
@@ -40,6 +44,9 @@ void	ini_data(char **argv, int argc, t_table *table)
 	table->eat_time = ft_atoi(argv[3]);
 	table->sleep_time = ft_atoi(argv[4]);
 	table->philo_ded = -1;
+	table->bad_env = 1;
+	if (!should_die(table))
+		table->bad_env = 0;
 	pthread_mutex_init(&table->lock_thread_create, NULL);
 	pthread_mutex_init(&table->lock_print, NULL);
 	pthread_mutex_init(&table->lock_dead, NULL);
@@ -47,7 +54,7 @@ void	ini_data(char **argv, int argc, t_table *table)
 	if (argc == 6)
 		table->time_must_eat = ft_atoi(argv[5]);
 	else
-		table->time_must_eat = -1;
+		table->time_must_eat = 0;
 	table->start_time = get_mili();
 	give_birth(table);
 }

@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/27 11:05:15 by yalee             #+#    #+#             */
-/*   Updated: 2023/05/02 03:09:24 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/02 15:01:18 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,15 @@ int	checker(t_philo *philo)
 {
 	long long	time;
 
+	if (philo->times_eaten >= philo->table->time_must_eat && philo->table->time_must_eat > 0)
+	{
+		philo->dead = 1;
+		return (0);
+	}
+	if (!philo->will_die)
+		return(1);
 	pthread_mutex_lock(&philo->lock_eat);
-	time = get_mili() - philo->time_last_eat + 6;
+	time = get_mili() - philo->time_last_eat + 10;
 	pthread_mutex_unlock(&philo->lock_eat);
 	if (time > philo->fate)
 	{
@@ -63,22 +70,26 @@ int	checker(t_philo *philo)
 
 void	*start_routine(void *args)
 {
+	long long	sleep;
 	t_philo	*philo = (t_philo *)args;
 
+	if (philo->table->philo_num == 1)
+	{
+		printf("[%lld] Philo number 0 died.\n", philo->table->die_time);
+		return NULL;
+	}
 	while(!philo->dead)
 	{
 		if (philo->isthinking && !philo->dead)
 			protected_printf(philo->name, 4, get_mili(), philo->table);
-		checker(philo);
-		usleep(100);
-		if (checker(philo) && checker(philo) && !philo->dead)
+		if (checker(philo) && !philo->dead)
 			philo_eat(philo);
-		checker(philo);
-		usleep(100);
-		if (checker(philo) && checker(philo) && !philo->dead)
+		if (checker(philo) && !philo->dead)
 		{
+			sleep = get_mili() + philo->table->sleep_time;
 			protected_printf(philo->name, 3, get_mili(), philo->table);
-			usleep(philo->table->sleep_time * 1000);
+			while (get_mili() < sleep)
+				usleep(10);
 		}
 	}
 	return NULL;

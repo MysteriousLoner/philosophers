@@ -6,7 +6,7 @@
 /*   By: yalee <yalee@student.42.fr.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 17:18:36 by yalee             #+#    #+#             */
-/*   Updated: 2023/05/02 02:51:20 by yalee            ###   ########.fr       */
+/*   Updated: 2023/05/02 15:30:47 by yalee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #define MAX_INT = 2147483647;
 
@@ -33,6 +34,7 @@ typedef struct s_table
 	pthread_mutex_t	lock_dead;
 	t_philo			*philo;
 	int				philo_ded;
+	int				bad_env;
 	int				philo_num;
 	long long		start_time;
 	long long		eat_time;
@@ -48,6 +50,7 @@ typedef struct s_philo
 	int	times_eaten;
 	int	dead;
 	int	fate;
+	int	will_die;
 	long long time_last_eat;
 	pthread_t life;
 	pthread_t checker;
@@ -78,4 +81,5 @@ void ini_data(char **argv, int argc, t_table *table);
 void ini_forks(t_table *table);
 int argv_bad(char **argv, int argc);
 void join_threads(void *args);
+int should_die(t_table *table);
 #endif
